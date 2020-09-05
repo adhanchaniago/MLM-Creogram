@@ -17,6 +17,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+use function PHPSTORM_META\map;
+
 class MemberController extends Controller
 {
 
@@ -39,20 +41,65 @@ class MemberController extends Controller
             return redirect('/admin-manual?batch=1');
         }
 
-        
+        $batch_head = Member::where('batch', $request->batch)
+            ->where('parent_node','head')
+            ->get();
 
         if($request->child == ''){
             $head_member = Member::where('batch', $request->batch)
                 ->where('parent_node','head')
                 ->get();
-        }else if($request->child == '1'){
-            return redirect('/admin-manual?batch=1');
+        }else if($request->batch == $batch_head[0]->batch  && $request->child == $batch_head[0]->id){
+            return redirect('/admin-manual?batch='.$batch_head[0]->batch);
         }else{
-            $head_member = Member::where('batch', $request->batch)
-                ->where('id', $request->child)
-                ->get();
-            if ($head_member->count() == 0){
-                return redirect('/admin-manual?batch=1');
+            function checkChildNodesMA($givenNode, $childNode, $switch){
+                $arrNode = []; 
+    
+                foreach($givenNode as $id){
+                    $parentNode =  Member::findOrFail($id);
+                    
+                    if ($parentNode->left_node != ''){
+                        array_push($arrNode, intval($parentNode->left_node));
+                        if ($childNode == $parentNode->left_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+    
+                    if ($parentNode->right_node != ''){
+                        array_push($arrNode, intval($parentNode->right_node));
+                        if ($childNode == $parentNode->right_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+                }
+    
+                if (count($arrNode) != 0){
+                    if ($switch == 0){
+                        return checkChildNodesMA($arrNode, $childNode, 1);
+                    } else {
+                        return checkChildNodesMA($arrNode, $childNode, 0);
+                    }
+                }
+    
+                return 'false';
+            }
+    
+            $node_list = checkChildNodesMA([$batch_head[0]->id], $request->child, 0);
+            
+            if ($node_list == 'true'){
+                $head_member = Member::where('batch', $request->batch)
+                    ->where('id', $request->child)
+                    ->get();
+            }else{
+                return redirect('/admin-manual?batch='.$batch_head[0]->batch);
             }
         }
 
@@ -160,12 +207,53 @@ class MemberController extends Controller
         }else if($request->child == '1'){
             return redirect('/admin-universal');
         }else{
-            $head_member = GoldMember::where('id', $request->child)->get();
-            if ($head_member->count() == 0){
+            function checkChildNodesUA($givenNode, $childNode, $switch){
+                $arrNode = []; 
+    
+                foreach($givenNode as $id){
+                    $parentNode =  GoldMember::findOrFail($id);
+                    
+                    if ($parentNode->left_node != ''){
+                        array_push($arrNode, intval($parentNode->left_node));
+                        if ($childNode == $parentNode->left_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+    
+                    if ($parentNode->right_node != ''){
+                        array_push($arrNode, intval($parentNode->right_node));
+                        if ($childNode == $parentNode->right_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+                }
+    
+                if (count($arrNode) != 0){
+                    if ($switch == 0){
+                        return checkChildNodesUA($arrNode, $childNode, 1);
+                    } else {
+                        return checkChildNodesUA($arrNode, $childNode, 0);
+                    }
+                }
+    
+                return 'false';
+            }
+    
+            $node_list = checkChildNodesUA(['1'], $request->child, 0);
+            
+            if ($node_list == 'true'){
+                $head_member = GoldMember::where('id', $request->child)->get();
+            }else{
                 return redirect('/admin-universal');
             }
-
-            //wrong ouput in child 2 and 3
         }
 
         $members[0] = $head_member[0]; 
@@ -263,11 +351,54 @@ class MemberController extends Controller
 
         if($request->child == ''){
             $head_member = Member::where('id', session('data')['id'])->get();
-        }else if($request->child == '1'){
+        }else if($request->child == session('data')['id']){
             return redirect('/client-manual');
         }else{
-            $head_member = Member::where('id', $request->child)->get();
-            if ($head_member->count() == 0){
+            function checkChildNodesMC($givenNode, $childNode, $switch){
+                $arrNode = []; 
+    
+                foreach($givenNode as $id){
+                    $parentNode =  Member::findOrFail($id);
+                    
+                    if ($parentNode->left_node != ''){
+                        array_push($arrNode, intval($parentNode->left_node));
+                        if ($childNode == $parentNode->left_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+    
+                    if ($parentNode->right_node != ''){
+                        array_push($arrNode, intval($parentNode->right_node));
+                        if ($childNode == $parentNode->right_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+                }
+    
+                if (count($arrNode) != 0){
+                    if ($switch == 0){
+                        return checkChildNodesMC($arrNode, $childNode, 1);
+                    } else {
+                        return checkChildNodesMC($arrNode, $childNode, 0);
+                    }
+                }
+    
+                return 'false';
+            }
+    
+            $node_list = checkChildNodesMC([session('data')['id']], $request->child, 0);
+            
+            if ($node_list == 'true'){
+                $head_member = Member::where('id', $request->child)->get();
+            }else{
                 return redirect('/client-manual');
             }
         }
@@ -281,7 +412,7 @@ class MemberController extends Controller
                 "id" => 0
             );
         }
-        
+    
         if($members[0]->right_node != ''){
             $members[2] = Member::findOrFail($members[0]->right_node);
         } else {
@@ -369,17 +500,60 @@ class MemberController extends Controller
             return redirect('/');
         }
 
+        $head = GoldMember::where('email', session('data')['email'])->get();
+
         if($request->child == ''){
             $head_member = GoldMember::where('email', session('data')['email'])->get();
-        }else if($request->child == '1'){
+        }else if($request->child == $head[0]->id){
             return redirect('/client-universal');
         }else{
-            $head_member = GoldMember::where('id', $request->child)->get();
-            if ($head_member->count() == 0){
+            function checkChildNodesUC($givenNode, $childNode, $switch){
+                $arrNode = []; 
+    
+                foreach($givenNode as $id){
+                    $parentNode =  GoldMember::findOrFail($id);
+                    
+                    if ($parentNode->left_node != ''){
+                        array_push($arrNode, intval($parentNode->left_node));
+                        if ($childNode == $parentNode->left_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+    
+                    if ($parentNode->right_node != ''){
+                        array_push($arrNode, intval($parentNode->right_node));
+                        if ($childNode == $parentNode->right_node){
+                            if ($switch == 0){
+                                return 'false';
+                            } else {
+                                return 'true';
+                            }
+                        }
+                    }
+                }
+    
+                if (count($arrNode) != 0){
+                    if ($switch == 0){
+                        return checkChildNodesUC($arrNode, $childNode, 1);
+                    } else {
+                        return checkChildNodesUC($arrNode, $childNode, 0);
+                    }
+                }
+    
+                return 'false';
+            }
+    
+            $node_list = checkChildNodesUC([$head[0]->id], $request->child, 0);
+            
+            if ($node_list == 'true'){
+                $head_member = GoldMember::where('id', $request->child)->get();
+            }else{
                 return redirect('/client-universal');
             }
-
-            //wrong ouput in child 2 and 3
         }
 
         $members[0] = $head_member[0]; 
