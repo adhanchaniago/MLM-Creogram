@@ -5,6 +5,7 @@
 @endsection
 
 @section('css_design')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/8.11.8/sweetalert2.min.css" >
     <style>
 
         #add-button{
