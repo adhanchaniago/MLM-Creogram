@@ -8,109 +8,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
     
     
-    <style>
-        body{
-            /* background-image: url("{{ asset('images/pexels-magda-ehlers-3575827.jpg') }}"); */
-            background-color: 121F20;
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-            font-family: 'Rubik', sans-serif;
-            color: white;
-        }
 
-        .container {
-            background-color: #121F20;
-            width: 400px;
-            position: absolute;
-            padding: 40px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            text-align: center;
-            border: 2px solid white;
-
-            border-top-left-radius: 100px;
-            border-bottom-right-radius: 100px;
-        }
-
-        /* .login {
-            margin:-90px 0px 30px 0px;
-        } */
-
-        .login img{
-            height:100px;
-            width:100px;
-            margin-bottom: 10px;
-        }
-
-        .login input[type="text"], .login input[type="password"] {
-            display: block;
-            color: white;
-            margin: 20px auto;
-            padding: 10px 10px;
-            width: 250px;
-            background: none;
-            border: 2px solid white;
-            box-sizing: border-box;
-            border-radius: 5px;
-            transition: 0.8s;
-        }
-
-        .login input[type="text"]:focus, .login input[type="password"]:focus {
-            border-left: 40px solid white;
-        }
-
-        .login input[type="submit"]{
-            background: none;
-            border: 2px solid white;
-            padding: 10px 10px;
-            width: 100px;
-            margin: 10px 10px;
-            border-radius: 15px;
-            color: white;
-        }
-
-        .login input[type="submit"]:hover {
-            background: white;
-            color: black;
-        }
-
-        @media (max-width: 575.98px) {
-            .container {
-                border-radius: 0px;
-            }
-        }
-
-    </style>
 </head>
 <body>
     <div class="container">
-        <form method="POST" class="login" action="{{ url('login') }}">
-            @csrf
-
-            <img src="{{ asset('images/logo_creogram-01.png') }}" >
-            <h1><b>Creogram</b></h1>
-            @if(count($errors) > 0)
-            <div class="alert alert-danger pt-4">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{$error}}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
-            @if(\Session::has('error'))
-                <div class="alert alert-danger pt-4">
-                    <p>{{\Session::get('error')}}</p>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="modal fade" id="myModal">
+                    <div class="modal-dialog model-sn">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1>Title</h1>
+                            </div>
+                            <div class="modal-body">
+                                Sample body
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-primary" data-dismiss="modal" value="Close">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            @endif
-            <input type="text" name="email" placeholder="Email">
-            <input type="password" name="password" placeholder="Password">
-            <input type="submit" value="LOGIN">
-        </form>
+
+                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Open Modal</a>
+            </div>
+        </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 </body>
 </html>
